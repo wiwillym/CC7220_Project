@@ -1,0 +1,282 @@
+PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ex: 		<http://127.0.0.1:3333/>
+PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+
+# All the queries in this file refers to the dataset that contains a list of video games with sales
+# greater than 100.000 copies.
+
+####### Number of games sold per platform #######
+
+SELECT ?platform (COUNT(?platform) as ?n_games) WHERE{
+    SELECT DISTINCT ?gameLabel ?platform
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform .
+    }
+}
+GROUP BY ?platform
+ORDER BY DESC(?n_games)
+
+####### Game, platform, sales and publisher of the top 20 games sold per region #######
+
+# North American Region
+SELECT DISTINCT ?gameLabel ?platform ?naSales ?publisher
+WHERE {
+    ?global rdfs:label ?gameLabel ;
+            ex:platform ?platform ;
+            ex:naSales ?naSales ;
+            ex:published ?year ;
+            ex:publisher ?publisher.
+}
+ORDER BY DESC(?naSales)
+LIMIT 20
+
+# European Region
+SELECT DISTINCT ?gameLabel ?platform ?euSales ?publisher
+WHERE {
+    ?global rdfs:label ?gameLabel ;
+            ex:platform ?platform ;
+            ex:euSales ?euSales ;
+            ex:published ?year ;
+            ex:publisher ?publisher.
+}
+ORDER BY DESC(?euSales)
+LIMIT 20
+
+# Japan
+SELECT DISTINCT ?gameLabel ?platform ?jpSales ?publisher
+WHERE {
+    ?global rdfs:label ?gameLabel ;
+            ex:platform ?platform ;
+            ex:jpSales ?jpSales ;
+            ex:published ?year ;
+            ex:publisher ?publisher.
+}
+ORDER BY DESC(?jpSales)
+LIMIT 20
+
+# Other Regions
+SELECT DISTINCT ?gameLabel ?platform ?otherSales ?publisher
+WHERE {
+    ?global rdfs:label ?gameLabel ;
+            ex:platform ?platform ;
+            ex:otherSales ?otherSales ;
+            ex:published ?year ;
+            ex:publisher ?publisher.
+}
+ORDER BY DESC(?otherSales)
+LIMIT 20
+
+
+####### Number of units sold per platform worldwide #######
+
+SELECT ?platform (SUM(?sales) as ?total_sales) WHERE{
+    SELECT DISTINCT ?gameLabel ?platform ?sales
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform ;
+                ex:globalSales ?sales .
+    }
+}
+GROUP BY ?platform
+ORDER BY DESC(?total_sales)
+
+
+####### Number of games sold per publisher in the top 50 games sold per region #######
+
+# North American Region
+SELECT ?publisher (COUNT(?publisher) as ?n_games) WHERE {
+	SELECT DISTINCT ?gameLabel ?platform ?naSales ?publisher
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform ;
+                ex:naSales ?naSales ;
+                ex:published ?year ;
+                ex:publisher ?publisher.
+    }
+    ORDER BY DESC(?naSales)
+    LIMIT 50
+}
+GROUP BY ?publisher
+ORDER BY DESC(?n_games)
+
+
+# European Region
+SELECT ?publisher (COUNT(?publisher) as ?n_games) WHERE {
+	SELECT DISTINCT ?gameLabel ?platform ?euSales ?publisher
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform ;
+                ex:euSales ?euSales ;
+                ex:published ?year ;
+                ex:publisher ?publisher.
+    }
+    ORDER BY DESC(?euSales)
+    LIMIT 50
+}
+GROUP BY ?publisher
+ORDER BY DESC(?n_games)
+
+
+# Japan
+SELECT ?publisher (COUNT(?publisher) as ?n_games) WHERE {
+	SELECT DISTINCT ?gameLabel ?platform ?jpSales ?publisher
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform ;
+                ex:jpSales ?jpSales ;
+                ex:published ?year ;
+                ex:publisher ?publisher.
+    }
+    ORDER BY DESC(?jpSales)
+    LIMIT 50
+}
+GROUP BY ?publisher
+ORDER BY DESC(?n_games)
+
+
+# Other Regions
+SELECT ?publisher (COUNT(?publisher) as ?n_games) WHERE {
+	SELECT DISTINCT ?gameLabel ?platform ?otherSales ?publisher
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform ;
+                ex:otherSales ?otherSales ;
+                ex:published ?year ;
+                ex:publisher ?publisher.
+    }
+    ORDER BY DESC(?otherSales)
+    LIMIT 50
+}
+GROUP BY ?publisher
+ORDER BY DESC(?n_games)
+
+
+####### Number of games sold per platform in the top 50 games sold per region #######
+
+# North American Region
+SELECT ?platform (COUNT(?platform) as ?n_games) WHERE {
+	SELECT DISTINCT ?gameLabel ?platform ?naSales ?publisher
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform ;
+                ex:naSales ?naSales ;
+                ex:published ?year ;
+                ex:publisher ?publisher.
+    }
+    ORDER BY DESC(?naSales)
+    LIMIT 50
+}
+GROUP BY ?platform
+ORDER BY DESC(?n_games)
+
+
+# European Region
+SELECT ?platform (COUNT(?platform) as ?n_games) WHERE {
+	SELECT DISTINCT ?gameLabel ?platform ?euSales ?publisher
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform ;
+                ex:euSales ?euSales ;
+                ex:published ?year ;
+                ex:publisher ?publisher.
+    }
+    ORDER BY DESC(?euSales)
+    LIMIT 50
+}
+GROUP BY ?platform
+ORDER BY DESC(?n_games)
+
+
+# Japan
+SELECT ?platform (COUNT(?platform) as ?n_games) WHERE {
+	SELECT DISTINCT ?gameLabel ?platform ?jpSales ?publisher
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform ;
+                ex:jpSales ?jpSales ;
+                ex:published ?year ;
+                ex:publisher ?publisher.
+    }
+    ORDER BY DESC(?jpSales)
+    LIMIT 50
+}
+GROUP BY ?platform
+ORDER BY DESC(?n_games)
+
+
+
+# Other Regions
+SELECT ?platform (COUNT(?platform) as ?n_games) WHERE {
+	SELECT DISTINCT ?gameLabel ?platform ?otherSales ?publisher
+    WHERE {
+        ?global rdfs:label ?gameLabel ;
+                ex:platform ?platform ;
+                ex:otherSales ?otherSales ;
+                ex:published ?year ;
+                ex:publisher ?publisher.
+    }
+    ORDER BY DESC(?otherSales)
+    LIMIT 50
+}
+GROUP BY ?platform
+ORDER BY DESC(?n_games)
+
+
+####### Top 5 quantity of games sold independent of the platform per region #######
+
+# North American Region
+SELECT ?gameLabel (SUM(?naSales) as ?crossplatform_sales) WHERE {
+    SELECT DISTINCT ?gameLabel ?naSales ?platform 
+        WHERE {
+            ?global rdfs:label ?gameLabel ;
+                    ex:naSales ?naSales ;
+                    ex:platform ?platform .
+        }
+}
+GROUP BY ?gameLabel
+ORDER BY DESC(?crossplatform_sales)
+LIMIT 5
+
+
+# European Region
+SELECT ?gameLabel (SUM(?euSales) as ?crossplatform_sales) WHERE {
+    SELECT DISTINCT ?gameLabel ?euSales ?platform 
+        WHERE {
+            ?global rdfs:label ?gameLabel ;
+                    ex:euSales ?euSales ;
+                    ex:platform ?platform .
+        }
+}
+GROUP BY ?gameLabel
+ORDER BY DESC(?crossplatform_sales)
+LIMIT 5
+
+
+# Japan
+SELECT ?gameLabel (SUM(?jpSales) as ?crossplatform_sales) WHERE {
+    SELECT DISTINCT ?gameLabel ?jpSales ?platform 
+        WHERE {
+            ?global rdfs:label ?gameLabel ;
+                    ex:jpSales ?jpSales ;
+                    ex:platform ?platform .
+        }
+}
+GROUP BY ?gameLabel
+ORDER BY DESC(?crossplatform_sales)
+LIMIT 5
+
+
+# Other Regions
+SELECT ?gameLabel (SUM(?otherSales) as ?crossplatform_sales) WHERE {
+    SELECT DISTINCT ?gameLabel ?otherSales ?platform 
+        WHERE {
+            ?global rdfs:label ?gameLabel ;
+                    ex:otherSales ?otherSales ;
+                    ex:platform ?platform .
+        }
+}
+GROUP BY ?gameLabel
+ORDER BY DESC(?crossplatform_sales)
+LIMIT 5
